@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Database Admin - ASIMOV AI Governance</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .flex-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+        .flex-column {
+            flex: 1;
+        }
+        .stats {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .stat-box {
+            flex: 1;
+            min-width: 150px;
+            background-color: #e7f3ff;
+            padding: 15px;
+            border-radius: 5px;
+            text-align: center;
+        }
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            margin: 5px 0;
+            color: #2196F3;
+        }
+        .stat-label {
+            font-size: 0.9em;
+            color: #666;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-links a:hover {
+            background-color: #0b7dda;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .button-secondary {
+            background-color: #2196F3;
+        }
+        .button-secondary:hover {
+            background-color: #0b7dda;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Main App</a>
+        <a href="/db_admin/">Database Home</a>
+        <a href="/db_admin/query">Custom Query</a>
+        <a href="/db_admin/export">Export Data</a>
+        <a href="/db_admin/analysis">Analysis</a>
+    </div>
+    
+    <h1>ASIMOV AI Governance Database Admin</h1>
+    
+    <div class="stats">
+        <div class="stat-box">
+            <div class="stat-number">{{ controls_count }}</div>
+            <div class="stat-label">Controls</div>
+            <a href="/db_admin/tables/controls" class="button button-secondary">View</a>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ responses_count }}</div>
+            <div class="stat-label">Audit Responses</div>
+            <a href="/db_admin/tables/responses" class="button button-secondary">View</a>
+        </div>
+        <div class="stat-box">
+            <div class="stat-number">{{ sessions_count }}</div>
+            <div class="stat-label">Audit Sessions</div>
+            <a href="/db_admin/tables/audit_sessions" class="button button-secondary">View</a>
+        </div>
+    </div>
+    
+    <div class="flex-container">
+        <div class="flex-column">
+            <div class="card">
+                <h2>Framework Coverage</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Framework</th>
+                            <th>Controls</th>
+                            <th>Responses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for fw in framework_coverage %}
+                        <tr>
+                            <td>{{ fw.framework }}</td>
+                            <td>{{ fw.control_count }}</td>
+                            <td>{{ fw.response_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="flex-column">
+            <div class="card">
+                <h2>Category Coverage</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Category</th>
+                            <th>Controls</th>
+                            <th>Responses</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for cat in category_coverage %}
+                        <tr>
+                            <td>{{ cat.category }}</td>
+                            <td>{{ cat.control_count }}</td>
+                            <td>{{ cat.response_count }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <h2>Database Information</h2>
+        <p><strong>Database File:</strong> {{ db_info.database_file }}</p>
+        <p><strong>File Size:</strong> {{ db_info.file_size_kb }} KB</p>
+        
+        <h3>Tables</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Table Name</th>
+                    <th>Record Count</th>
+                    <th>Columns</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for table in db_info.tables %}
+                <tr>
+                    <td>{{ table.name }}</td>
+                    <td>{{ table.record_count }}</td>
+                    <td>{{ table.columns|length }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <form action="/db_admin/optimize" method="post" style="margin-top: 20px;">
+            <button type="submit" class="button">Optimize Database</button>
+        </form>
+    </div>
+</body>
+</html>
