@@ -1,0 +1,335 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ roadmap.name }} - Implementation Roadmap{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h2">{{ roadmap.name }}</h1>
+            <p class="text-muted">{{ roadmap.description }}</p>
+        </div>
+        <div>
+            <a href="{{ url_for('roadmap.list_roadmaps') }}" class="btn btn-outline-secondary mr-2">
+                <i class="fas fa-arrow-left"></i> Back to Roadmaps
+            </a>
+            <a href="{{ url_for('roadmap.view_backlog', roadmap_id=roadmap.id) }}" class="btn btn-primary">
+                <i class="fas fa-list"></i> Manage Backlog
+            </a>
+        </div>
+    </div>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <!-- Roadmap Overview -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Roadmap Details</h6>
+                </div>
+                <div class="card-body">
+                    <div class="row no-gutters align-items-center">
+                        <div class="col mr-2">
+                            <div class="mb-3">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Status</div>
+                                <div class="h5 mb-0 font-weight-bold">
+                                    <span class="badge badge-{% if roadmap.status == 'Active' %}success{% elif roadmap.status == 'Draft' %}secondary{% else %}primary{% endif %}">
+                                        {{ roadmap.status }}
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Owner</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ roadmap.owner|default('Not assigned', true) }}</div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">Created</div>
+                                <div class="h5 mb-0 font-weight-bold text-gray-800">{{ roadmap.created_date[:10] }}</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card shadow h-100">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Implementation Progress</h6>
+                </div>
+                <div class="card-body">
+                    {% set items_count = backlog_items|length %}
+                    {% set implemented_count = backlog_items|selectattr('status', 'in', ['Done', 'Implemented'])|list|length %}
+                    {% set in_progress_count = backlog_items|selectattr('status', 'eq', 'In Progress')|list|length %}
+                    {% set ready_count = backlog_items|selectattr('status', 'eq', 'Ready')|list|length %}
+                    {% set backlog_count = backlog_items|selectattr('status', 'eq', 'Backlog')|list|length %}
+                    
+                    {% set overall_percent = (implemented_count / items_count * 100)|round if items_count > 0 else 0 %}
+                    
+                    <h4 class="small font-weight-bold">Overall Completion <span class="float-right">{{ overall_percent }}%</span></h4>
+                    <div class="progress mb-4">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ overall_percent }}%"
+                            aria-valuenow="{{ overall_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    
+                    <div class="row text-center mb-3">
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ backlog_count }}</div>
+                            <div class="text-xs text-muted">Backlog</div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ ready_count }}</div>
+                            <div class="text-xs text-muted">Ready</div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ in_progress_count }}</div>
+                            <div class="text-xs text-muted">In Progress</div>
+                        </div>
+                        <div class="col-md-3 col-sm-6 mb-2">
+                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{ implemented_count }}</div>
+                            <div class="text-xs text-muted">Implemented</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Sprints and Backlog -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Implementation Sprints</h6>
+                    <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#createSprintModal">
+                        <i class="fas fa-plus"></i> New Sprint
+                    </button>
+                </div>
+                <div class="card-body">
+                    {% if sprints %}
+                        <div class="timeline">
+                            {% for sprint in sprints %}
+                                <div class="timeline-item">
+                                    <div class="timeline-marker {% if sprint.status == 'Completed' %}bg-success{% elif sprint.status == 'In Progress' %}bg-primary{% else %}bg-secondary{% endif %}"></div>
+                                    <div class="timeline-content">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-1">
+                                                <a href="{{ url_for('roadmap.view_sprint', roadmap_id=roadmap.id, sprint_id=sprint.id) }}">
+                                                    {{ sprint.name }}
+                                                </a>
+                                                <span class="badge badge-{% if sprint.status == 'Completed' %}success{% elif sprint.status == 'In Progress' %}primary{% else %}secondary{% endif %} ml-2">
+                                                    {{ sprint.status }}
+                                                </span>
+                                            </h6>
+                                            <small class="text-muted">{{ sprint.start_date[:10] }} - {{ sprint.end_date[:10] }}</small>
+                                        </div>
+                                        <p class="mb-2 small">{{ sprint.description|default('No description provided', true)|truncate(100) }}</p>
+                                        
+                                        {% set sprint_items = backlog_items|selectattr('sprint_id', 'eq', sprint.id)|list %}
+                                        {% set sprint_done = sprint_items|selectattr('status', 'in', ['Done', 'Implemented'])|list|length %}
+                                        {% set sprint_total = sprint_items|length %}
+                                        {% set sprint_percent = (sprint_done / sprint_total * 100)|round if sprint_total > 0 else 0 %}
+                                        
+                                        <div class="d-flex justify-content-between align-items-center mb-1 small">
+                                            <span>Progress: {{ sprint_done }}/{{ sprint_total }} items</span>
+                                            <span>{{ sprint_percent }}%</span>
+                                        </div>
+                                        <div class="progress mb-2" style="height: 8px;">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: {{ sprint_percent }}%"
+                                                aria-valuenow="{{ sprint_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                                        </div>
+                                        
+                                        <div class="mt-2">
+                                            <a href="{{ url_for('roadmap.view_sprint', roadmap_id=roadmap.id, sprint_id=sprint.id) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="fas fa-tasks"></i> View Tasks
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <div class="text-center py-5">
+                            <div class="mb-3">
+                                <i class="fas fa-calendar-alt fa-3x text-muted"></i>
+                            </div>
+                            <h4>No Sprints Planned Yet</h4>
+                            <p class="text-muted">Create your first sprint to start planning implementation work.</p>
+                            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#createSprintModal">
+                                <i class="fas fa-plus"></i> Create First Sprint
+                            </button>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Backlog</h6>
+                    <a href="{{ url_for('roadmap.view_backlog', roadmap_id=roadmap.id) }}" class="btn btn-sm btn-primary">
+                        <i class="fas fa-list"></i> View All
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% if backlog_items %}
+                        <div class="d-flex justify-content-between mb-3">
+                            <div class="h6 mb-0">
+                                <span class="badge badge-danger mr-1">
+                                    {{ backlog_items|selectattr('priority', 'eq', 'High')|list|length }} High
+                                </span>
+                                <span class="badge badge-warning mr-1">
+                                    {{ backlog_items|selectattr('priority', 'eq', 'Medium')|list|length }} Medium
+                                </span>
+                                <span class="badge badge-info">
+                                    {{ backlog_items|selectattr('priority', 'eq', 'Low')|list|length }} Low
+                                </span>
+                            </div>
+                            <small class="text-muted">{{ backlog_items|length }} total items</small>
+                        </div>
+                        
+                        <div class="table-responsive">
+                            <table class="table table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>Item</th>
+                                        <th>Priority</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for item in backlog_items[:5] %}
+                                        <tr>
+                                            <td>{{ item.title|truncate(30) }}</td>
+                                            <td>
+                                                <span class="badge badge-pill 
+                                                    {% if item.priority == 'High' %}
+                                                        badge-danger
+                                                    {% elif item.priority == 'Medium' %}
+                                                        badge-warning
+                                                    {% else %}
+                                                        badge-info
+                                                    {% endif %}
+                                                    ">{{ item.priority }}</span>
+                                            </td>
+                                            <td>
+                                                <span class="badge 
+                                                    {% if item.status == 'Ready' %}
+                                                        badge-info
+                                                    {% elif item.status == 'In Progress' %}
+                                                        badge-primary
+                                                    {% elif item.status in ['Done', 'Implemented'] %}
+                                                        badge-success
+                                                    {% else %}
+                                                        badge-secondary
+                                                    {% endif %}
+                                                    ">{{ item.status }}</span>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        {% if backlog_items|length > 5 %}
+                            <div class="text-center mt-3">
+                                <small class="text-muted">Showing 5 of {{ backlog_items|length }} items</small>
+                                <div class="mt-2">
+                                    <a href="{{ url_for('roadmap.view_backlog', roadmap_id=roadmap.id) }}" class="btn btn-sm btn-outline-primary">
+                                        View All Backlog Items
+                                    </a>
+                                </div>
+                            </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="text-center py-4">
+                            <div class="mb-3">
+                                <i class="fas fa-clipboard-list fa-3x text-muted"></i>
+                            </div>
+                            <h4>Backlog is Empty</h4>
+                            <p class="text-muted">Add items to your backlog to start planning work.</p>
+                            <a href="{{ url_for('roadmap.view_backlog', roadmap_id=roadmap.id) }}" class="btn btn-primary">
+                                <i class="fas fa-plus"></i> Add Backlog Items
+                            </a>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Create Sprint Modal -->
+    <div class="modal fade" id="createSprintModal" tabindex="-1" role="dialog" aria-labelledby="createSprintModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="createSprintModalLabel">Create New Sprint</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ url_for('roadmap.create_sprint', roadmap_id=roadmap.id) }}">
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="name"><strong>Sprint Name</strong> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required
+                                  placeholder="e.g., Sprint 1 or 'June 2025'">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description"><strong>Description</strong></label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                     placeholder="Describe the goals and focus of this sprint..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="start_date"><strong>Start Date</strong></label>
+                            <input type="date" class="form-control" id="start_date" name="start_date">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="end_date"><strong>End Date</strong></label>
+                            <input type="date" class="form-control" id="end_date" name="end_date">
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Create Sprint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.timeline {
+    position: relative;
+    padding-left: 30px;
+}
+.timeline-item {
+    position: relative;
+    margin-bottom: 30px;
+}
+.timeline-marker {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    left: -30px;
+    top: 0;
+}
+.timeline-content {
+    padding-bottom: 20px;
+    border-bottom: 1px solid #e3e6f0;
+}
+</style>
+{% endblock %}
