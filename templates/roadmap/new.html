@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Roadmap - ASIMOV AI Governance{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Create New Implementation Roadmap</h6>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-info">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <p class="mb-4">
+                        Create a new AI Governance implementation roadmap to plan and track your compliance effort. 
+                        Organize controls into sprints and monitor progress over time.
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('roadmap.new_roadmap') }}">
+                        <div class="form-group">
+                            <label for="name"><strong>Roadmap Name</strong> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required
+                                   placeholder="e.g., EU AI Act Compliance 2025">
+                            <small class="form-text text-muted">Choose a clear, descriptive name for your roadmap.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="organization"><strong>Organization/Department</strong></label>
+                            <input type="text" class="form-control" id="organization" name="organization"
+                                   placeholder="e.g., AI Research Division">
+                            <small class="form-text text-muted">The organization or department this roadmap applies to.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description"><strong>Description</strong></label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                     placeholder="Describe the purpose and scope of this roadmap..."></textarea>
+                            <small class="form-text text-muted">Provide context about what this roadmap aims to achieve.</small>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="start_date"><strong>Start Date</strong></label>
+                                <input type="date" class="form-control" id="start_date" name="start_date">
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="end_date"><strong>Target Completion Date</strong></label>
+                                <input type="date" class="form-control" id="end_date" name="end_date">
+                            </div>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('roadmap.list_roadmaps') }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Roadmap</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates
+    const today = new Date();
+    
+    // Format date as YYYY-MM-DD
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
+    // Set today as start date
+    document.getElementById('start_date').value = formatDate(today);
+    
+    // Set date 3 months from now as end date
+    const endDate = new Date(today);
+    endDate.setMonth(today.getMonth() + 3);
+    document.getElementById('end_date').value = formatDate(endDate);
+});
+</script>
+{% endblock %}
