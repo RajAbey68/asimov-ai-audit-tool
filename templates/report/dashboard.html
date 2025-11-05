@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ASIMOV Report - Audit Analytics Dashboard</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; 
+            margin: 0; padding: 20px; background-color: #f8f9fa; 
+        }
+        .header { 
+            background: linear-gradient(135deg, #00C9A7, #1C2541); 
+            color: white; padding: 30px; border-radius: 12px; margin-bottom: 30px; 
+        }
+        .container { max-width: 1400px; margin: 0 auto; }
+        .card { 
+            background: white; padding: 25px; border-radius: 12px; 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 25px; 
+        }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .metric { text-align: center; padding: 20px; }
+        .metric h3 { margin: 0; font-size: 2.5em; color: #00C9A7; }
+        .metric p { margin: 5px 0; color: #666; font-weight: 600; }
+        .chart-container { position: relative; height: 300px; margin: 20px 0; }
+        .sessions-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        .sessions-table th, .sessions-table td { 
+            padding: 12px; text-align: left; border-bottom: 1px solid #eee; 
+        }
+        .sessions-table th { background-color: #f8f9fa; font-weight: 600; }
+        .btn { 
+            background: #00C9A7; color: white; padding: 8px 16px; 
+            border: none; border-radius: 6px; text-decoration: none; 
+            display: inline-block; font-size: 14px; 
+        }
+        .btn:hover { background: #00a085; }
+        .pillar-grid { 
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); 
+            gap: 15px; margin-top: 20px; 
+        }
+        .pillar-card { 
+            background: #f8f9fa; padding: 15px; border-radius: 8px; text-align: center; 
+        }
+        .pillar-card h4 { margin: 0 0 10px 0; color: #1C2541; }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a { margin-right: 20px; color: #00C9A7; text-decoration: none; font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/audits">View Audits</a>
+        <a href="/report">ASIMOV Reports</a>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>🧾 ASIMOV Report — Audit Analytics Dashboard</h1>
+            <p>Comprehensive AI governance compliance analytics and insights</p>
+        </div>
+
+        <!-- Overall Metrics -->
+        <div class="card">
+            <h2>📊 Overall Audit Coverage</h2>
+            <div class="grid">
+                <div class="metric">
+                    <h3>{{ sessions|length }}</h3>
+                    <p>Total Audit Sessions</p>
+                </div>
+                <div class="metric">
+                    <h3>{{ analytics.response_distribution|length }}</h3>
+                    <p>Response Types</p>
+                </div>
+                <div class="metric">
+                    <h3>{{ analytics.framework_coverage|length }}</h3>
+                    <p>Frameworks Covered</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Charts Section -->
+        <div class="grid">
+            <div class="card">
+                <h3>Response Distribution</h3>
+                <div class="chart-container">
+                    <canvas id="responseChart"></canvas>
+                </div>
+            </div>
+            <div class="card">
+                <h3>Framework Coverage</h3>
+                <div class="chart-container">
+                    <canvas id="frameworkChart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- ASIMOV Pillars Analysis -->
+        <div class="card">
+            <h3>🎯 ASIMOV Pillars Analysis</h3>
+            <div class="pillar-grid">
+                {% for pillar in analytics.pillar_analysis %}
+                <div class="pillar-card">
+                    <h4>{{ pillar.pillar }}</h4>
+                    <p><strong>{{ pillar.responses }}</strong> responses</p>
+                    <p>Avg Score: <strong>{{ "%.1f"|format(pillar.avg_score) }}</strong></p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Audit Sessions Table -->
+        <div class="card">
+            <h3>Recent Audit Sessions</h3>
+            <table class="sessions-table">
+                <thead>
+                    <tr>
+                        <th>Audit Name</th>
+                        <th>Framework</th>
+                        <th>Sector</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td><strong>{{ session.session_name }}</strong></td>
+                        <td>{{ session.framework_filter }}</td>
+                        <td>{{ session.sector_filter or 'Not specified' }}</td>
+                        <td>{{ session.session_date[:10] if session.session_date else 'Unknown' }}</td>
+                        <td>
+                            <a href="/report/{{ session.session_id }}" class="btn">View Report</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        // Response Distribution Chart
+        const responseData = {{ analytics.response_distribution | tojson }};
+        const responseCtx = document.getElementById('responseChart').getContext('2d');
+        new Chart(responseCtx, {
+            type: 'doughnut',
+            data: {
+                labels: responseData.map(item => item.response),
+                datasets: [{
+                    data: responseData.map(item => item.count),
+                    backgroundColor: ['#00C9A7', '#1C2541', '#FF6B6B', '#4ECDC4', '#45B7D1']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom' }
+                }
+            }
+        });
+
+        // Framework Coverage Chart
+        const frameworkData = {{ analytics.framework_coverage | tojson }};
+        const frameworkCtx = document.getElementById('frameworkChart').getContext('2d');
+        new Chart(frameworkCtx, {
+            type: 'bar',
+            data: {
+                labels: frameworkData.map(item => item.framework.split(':')[0]),
+                datasets: [{
+                    label: 'Responses',
+                    data: frameworkData.map(item => item.responses),
+                    backgroundColor: '#00C9A7'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
