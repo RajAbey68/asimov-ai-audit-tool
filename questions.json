@@ -1,0 +1,12 @@
+[
+  {
+    "pillar": "Accountability",
+    "control_code": "A1",
+    "question": "Do you define clear RACI roles for AI initiatives?"
+  },
+  {
+    "pillar": "Integrity",
+    "control_code": "I2",
+    "question": "Do you test models for fairness and bias before deployment?"
+  }
+]
