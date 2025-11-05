@@ -1,0 +1,502 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ sprint.name }} - {{ roadmap.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="h3">{{ sprint.name }}</h1>
+            <h5 class="text-muted">{{ roadmap.name }}</h5>
+        </div>
+        <div>
+            <a href="{{ url_for('roadmap.view_roadmap', roadmap_id=roadmap.id) }}" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Back to Roadmap
+            </a>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addSprintItemModal">
+                <i class="fas fa-plus"></i> Add Control to Sprint
+            </button>
+        </div>
+    </div>
+
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <!-- Sprint Info Card -->
+    <div class="row mb-4">
+        <div class="col-lg-8">
+            <div class="card shadow">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Status</h6>
+                                <span class="badge 
+                                    {% if sprint.status == 'Completed' %}
+                                        badge-success
+                                    {% elif sprint.status == 'In Progress' %}
+                                        badge-primary
+                                    {% else %}
+                                        badge-secondary
+                                    {% endif %}
+                                    p-2">{{ sprint.status }}</span>
+                            </div>
+                            
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Duration</h6>
+                                <p class="mb-0">{{ sprint.start_date[:10] }} to {{ sprint.end_date[:10] }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <h6 class="text-muted mb-1">Description</h6>
+                                <p class="mb-0">{{ sprint.description|default('No description provided', true) }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <form method="POST" action="{{ url_for('roadmap.update_sprint', roadmap_id=roadmap.id, sprint_id=sprint.id) }}" class="form-inline justify-content-end">
+                        <div class="form-group mr-3">
+                            <label for="status" class="mr-2">Update Status:</label>
+                            <select class="form-control form-control-sm" id="status" name="status">
+                                <option value="Planned" {% if sprint.status == 'Planned' %}selected{% endif %}>Planned</option>
+                                <option value="In Progress" {% if sprint.status == 'In Progress' %}selected{% endif %}>In Progress</option>
+                                <option value="Completed" {% if sprint.status == 'Completed' %}selected{% endif %}>Completed</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-sm btn-primary">Update</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="m-0 font-weight-bold">Progress Summary</h6>
+                </div>
+                <div class="card-body">
+                    {% set done_count = backlog_items|selectattr('status', 'in', ['Done', 'Implemented'])|list|length %}
+                    {% set total_count = backlog_items|length %}
+                    {% set progress_percent = (done_count / total_count * 100)|round if total_count > 0 else 0 %}
+                    
+                    <h4 class="small font-weight-bold">Implementation Progress <span class="float-right">{{ progress_percent }}%</span></h4>
+                    <div class="progress mb-4">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: {{ progress_percent }}%"
+                            aria-valuenow="{{ progress_percent }}" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                    
+                    <div class="text-center mb-2">
+                        <div class="badge badge-pill badge-secondary p-2 m-1">
+                            {{ backlog_items|selectattr('status', 'eq', 'To Do')|list|length }} To Do
+                        </div>
+                        <div class="badge badge-pill badge-primary p-2 m-1">
+                            {{ backlog_items|selectattr('status', 'eq', 'In Progress')|list|length }} In Progress
+                        </div>
+                        <div class="badge badge-pill badge-success p-2 m-1">
+                            {{ done_count }} Done
+                        </div>
+                    </div>
+                    
+                    <div class="text-center">
+                        <span class="d-block small text-muted">
+                            {{ done_count }} of {{ total_count }} items completed
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Kanban Board -->
+    <div class="row mb-4">
+        <!-- To Do Column -->
+        <div class="col-lg-4">
+            <div class="card bg-light mb-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="m-0 font-weight-bold text-secondary">
+                        To Do
+                        <span class="badge badge-secondary ml-1">
+                            {{ backlog_items|selectattr('status', 'eq', 'To Do')|list|length }}
+                        </span>
+                    </h6>
+                </div>
+                <div class="card-body p-2">
+                    <div class="sprint-column" data-status="To Do">
+                        {% for item in backlog_items %}
+                            {% if item.status == 'To Do' %}
+                                <div class="card mb-2 sprint-item" data-id="{{ item.id }}">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="card-title mb-1">{{ item.title }}</h6>
+                                            <span class="badge badge-pill 
+                                                {% if item.priority == 'High' %}
+                                                    badge-danger
+                                                {% elif item.priority == 'Medium' %}
+                                                    badge-warning
+                                                {% else %}
+                                                    badge-info
+                                                {% endif %}
+                                                ">{{ item.priority }}</span>
+                                        </div>
+                                        {% if item.control_name %}
+                                            <div class="small text-muted mb-2">Control: {{ item.control_name }}</div>
+                                        {% endif %}
+                                        {% if item.assigned_to %}
+                                            <div class="small text-primary">Assigned to: {{ item.assigned_to }}</div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <button class="btn btn-sm btn-outline-primary edit-sprint-item"
+                                                    data-id="{{ item.id }}"
+                                                    data-title="{{ item.title }}"
+                                                    data-description="{{ item.description }}"
+                                                    data-priority="{{ item.priority }}"
+                                                    data-assigned-to="{{ item.assigned_to }}"
+                                                    data-effort="{{ item.effort_estimate }}">
+                                                <i class="fas fa-edit"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success update-status"
+                                                    data-item-id="{{ item.id }}" 
+                                                    data-status="In Progress">
+                                                Start
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- In Progress Column -->
+        <div class="col-lg-4">
+            <div class="card bg-light mb-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">
+                        In Progress
+                        <span class="badge badge-primary ml-1">
+                            {{ backlog_items|selectattr('status', 'eq', 'In Progress')|list|length }}
+                        </span>
+                    </h6>
+                </div>
+                <div class="card-body p-2">
+                    <div class="sprint-column" data-status="In Progress">
+                        {% for item in backlog_items %}
+                            {% if item.status == 'In Progress' %}
+                                <div class="card mb-2 sprint-item" data-id="{{ item.id }}">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="card-title mb-1">{{ item.title }}</h6>
+                                            <span class="badge badge-pill 
+                                                {% if item.priority == 'High' %}
+                                                    badge-danger
+                                                {% elif item.priority == 'Medium' %}
+                                                    badge-warning
+                                                {% else %}
+                                                    badge-info
+                                                {% endif %}
+                                                ">{{ item.priority }}</span>
+                                        </div>
+                                        {% if item.control_name %}
+                                            <div class="small text-muted mb-2">Control: {{ item.control_name }}</div>
+                                        {% endif %}
+                                        {% if item.assigned_to %}
+                                            <div class="small text-primary">Assigned to: {{ item.assigned_to }}</div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <button class="btn btn-sm btn-outline-secondary update-status"
+                                                    data-item-id="{{ item.id }}" 
+                                                    data-status="To Do">
+                                                <i class="fas fa-arrow-left"></i>
+                                            </button>
+                                            <button class="btn btn-sm btn-outline-success update-status"
+                                                    data-item-id="{{ item.id }}" 
+                                                    data-status="Done">
+                                                Complete
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Done Column -->
+        <div class="col-lg-4">
+            <div class="card bg-light mb-4">
+                <div class="card-header bg-light py-3">
+                    <h6 class="m-0 font-weight-bold text-success">
+                        Done
+                        <span class="badge badge-success ml-1">
+                            {{ backlog_items|selectattr('status', 'in', ['Done', 'Implemented'])|list|length }}
+                        </span>
+                    </h6>
+                </div>
+                <div class="card-body p-2">
+                    <div class="sprint-column" data-status="Done">
+                        {% for item in backlog_items %}
+                            {% if item.status in ['Done', 'Implemented'] %}
+                                <div class="card mb-2 sprint-item" data-id="{{ item.id }}">
+                                    <div class="card-body p-3">
+                                        <div class="d-flex justify-content-between align-items-start">
+                                            <h6 class="card-title mb-1">{{ item.title }}</h6>
+                                            <span class="badge badge-pill 
+                                                {% if item.priority == 'High' %}
+                                                    badge-danger
+                                                {% elif item.priority == 'Medium' %}
+                                                    badge-warning
+                                                {% else %}
+                                                    badge-info
+                                                {% endif %}
+                                                ">{{ item.priority }}</span>
+                                        </div>
+                                        {% if item.control_name %}
+                                            <div class="small text-muted mb-2">Control: {{ item.control_name }}</div>
+                                        {% endif %}
+                                        {% if item.assigned_to %}
+                                            <div class="small text-primary">Assigned to: {{ item.assigned_to }}</div>
+                                        {% endif %}
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <button class="btn btn-sm btn-outline-primary update-status"
+                                                    data-item-id="{{ item.id }}" 
+                                                    data-status="In Progress">
+                                                <i class="fas fa-arrow-left"></i>
+                                            </button>
+                                            {% if item.status != 'Implemented' %}
+                                                <button class="btn btn-sm btn-outline-success update-status"
+                                                        data-item-id="{{ item.id }}" 
+                                                        data-status="Implemented">
+                                                    Mark Implemented
+                                                </button>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Item to Sprint Modal -->
+    <div class="modal fade" id="addSprintItemModal" tabindex="-1" role="dialog" aria-labelledby="addSprintItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addSprintItemModalLabel">Add Control to Sprint</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ url_for('roadmap.add_to_backlog', roadmap_id=roadmap.id) }}">
+                    <div class="modal-body">
+                        <input type="hidden" name="sprint_id" value="{{ sprint.id }}">
+                        
+                        <div class="form-group">
+                            <label for="control_id"><strong>Select Control</strong> (Optional)</label>
+                            <select class="form-control" id="control_id" name="control_id">
+                                <option value="">Custom Item (No Control)</option>
+                                {% for control in controls %}
+                                    <option value="{{ control.id }}">{{ control.control_name }}</option>
+                                {% endfor %}
+                            </select>
+                            <small class="form-text text-muted">Select an existing control or create a custom sprint item.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="title"><strong>Item Title</strong> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                  placeholder="e.g., Implement Control Documentation">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description"><strong>Description</strong></label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                     placeholder="Describe the implementation task..."></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="priority"><strong>Priority</strong></label>
+                            <select class="form-control" id="priority" name="priority">
+                                <option value="High">High</option>
+                                <option value="Medium" selected>Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="assigned_to"><strong>Assigned To</strong></label>
+                            <input type="text" class="form-control" id="assigned_to" name="assigned_to"
+                                   placeholder="Enter name or team">
+                        </div>
+                        
+                        <input type="hidden" name="status" value="To Do">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Add to Sprint</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Edit Sprint Item Modal -->
+    <div class="modal fade" id="editSprintItemModal" tabindex="-1" role="dialog" aria-labelledby="editSprintItemModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="editSprintItemModalLabel">Edit Sprint Item</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <form method="POST" action="{{ url_for('roadmap.update_backlog', roadmap_id=roadmap.id) }}">
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_item_id" name="item_id">
+                        <input type="hidden" name="sprint_id" value="{{ sprint.id }}">
+                        
+                        <div class="form-group">
+                            <label for="edit_title"><strong>Title</strong> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="edit_title" name="title" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_description"><strong>Description</strong></label>
+                            <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_priority"><strong>Priority</strong></label>
+                            <select class="form-control" id="edit_priority" name="priority">
+                                <option value="High">High</option>
+                                <option value="Medium">Medium</option>
+                                <option value="Low">Low</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_assigned_to"><strong>Assigned To</strong></label>
+                            <input type="text" class="form-control" id="edit_assigned_to" name="assigned_to">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="edit_effort"><strong>Effort Estimate</strong></label>
+                            <select class="form-control" id="edit_effort" name="effort_estimate">
+                                <option value="">Select Effort</option>
+                                <option value="1">1 - Very Small</option>
+                                <option value="2">2 - Small</option>
+                                <option value="3">3 - Medium</option>
+                                <option value="5">5 - Large</option>
+                                <option value="8">8 - Very Large</option>
+                                <option value="13">13 - Complex</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.sprint-column {
+    min-height: 100px;
+    padding: 10px;
+}
+.sprint-item {
+    cursor: grab;
+}
+.sprint-item:active {
+    cursor: grabbing;
+}
+.sprint-item:hover {
+    box-shadow: 0 .15rem 1.75rem 0 rgba(58,59,69,.15);
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Control selection in add modal
+    document.getElementById('control_id').addEventListener('change', function() {
+        const controlId = this.value;
+        if (controlId) {
+            const controlName = this.options[this.selectedIndex].text;
+            document.getElementById('title').value = controlName;
+        }
+    });
+    
+    // Edit sprint item
+    const editButtons = document.querySelectorAll('.edit-sprint-item');
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.getAttribute('data-id');
+            const title = this.getAttribute('data-title');
+            const description = this.getAttribute('data-description');
+            const priority = this.getAttribute('data-priority');
+            const assignedTo = this.getAttribute('data-assigned-to');
+            const effort = this.getAttribute('data-effort');
+            
+            document.getElementById('edit_item_id').value = id;
+            document.getElementById('edit_title').value = title;
+            document.getElementById('edit_description').value = description;
+            document.getElementById('edit_priority').value = priority;
+            document.getElementById('edit_assigned_to').value = assignedTo;
+            document.getElementById('edit_effort').value = effort;
+            
+            $('#editSprintItemModal').modal('show');
+        });
+    });
+    
+    // Update item status
+    const statusButtons = document.querySelectorAll('.update-status');
+    statusButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const itemId = this.getAttribute('data-item-id');
+            const status = this.getAttribute('data-status');
+            const roadmapId = '{{ roadmap.id }}';
+            
+            fetch(`/api/roadmaps/${roadmapId}/backlog/move`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    item_id: itemId,
+                    status: status,
+                    sprint_id: '{{ sprint.id }}'
+                }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload();
+                } else {
+                    alert('Failed to update status: ' + data.error);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred while updating status');
+            });
+        });
+    });
+});
+</script>
+{% endblock %}
