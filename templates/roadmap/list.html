@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Implementation Roadmaps - ASIMOV AI Governance</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; margin: 0; padding: 20px; background-color: #f8f9fa; }
+        .container { max-width: 1200px; margin: 0 auto; }
+        .nav-links { margin-bottom: 20px; }
+        .nav-links a { margin-right: 20px; color: #00C9A7; text-decoration: none; }
+        .card { background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 20px; }
+        .button { background: #00C9A7; color: white; padding: 12px 24px; border: none; border-radius: 6px; text-decoration: none; display: inline-block; }
+        .button:hover { background: #00a085; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #eee; }
+        th { background-color: #f8f9fa; font-weight: 600; }
+        .empty-state { text-align: center; padding: 40px; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/audits">View Previous Audits</a>
+        <a href="/roadmap/list">Implementation Roadmaps</a>
+    </div>
+    <div class="container">
+        <div class="card">
+            <h1>AI Governance Implementation Roadmaps</h1>
+            <p>Manage your AI governance implementation with structured roadmaps and backlog tracking.</p>
+            
+            {% if roadmaps %}
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Roadmap Name</th>
+                            <th>Description</th>
+                            <th>Owner</th>
+                            <th>Created</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for roadmap in roadmaps %}
+                        <tr>
+                            <td><strong>{{ roadmap.name }}</strong></td>
+                            <td>{{ roadmap.description[:100] }}...</td>
+                            <td>{{ roadmap.owner or 'Not assigned' }}</td>
+                            <td>{{ roadmap.created_date[:10] }}</td>
+                            <td>{{ roadmap.status }}</td>
+                            <td>
+                                <a href="/roadmap/view/{{ roadmap.id }}" class="button">View</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            {% else %}
+                <div class="empty-state">
+                    <h3>No Implementation Roadmaps Yet</h3>
+                    <p>Create your first roadmap to start planning your AI governance implementation.</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="card">
+            <h3>What is an Implementation Roadmap?</h3>
+            <p>Implementation roadmaps help you plan and track the rollout of AI governance controls across your organization. They provide structured approaches to compliance implementation with timeline management and progress tracking.</p>
+        </div>
+    </div>
+</body>
+</html>
+        </a>
+    </div>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">{{ message }}</div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="row">
+        <div class="col-lg-12">
+            {% if roadmaps %}
+                <div class="card shadow mb-4">
+                    <div class="card-header py-3">
+                        <h6 class="m-0 font-weight-bold text-primary">Your Implementation Roadmaps</h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover" id="roadmapsTable">
+                                <thead>
+                                    <tr>
+                                        <th>Roadmap Name</th>
+                                        <th>Description</th>
+                                        <th>Owner</th>
+                                        <th>Created</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for roadmap in roadmaps %}
+                                    <tr>
+                                        <td>
+                                            <a href="{{ url_for('roadmap.view_roadmap', roadmap_id=roadmap.id) }}">
+                                                {{ roadmap.name }}
+                                            </a>
+                                        </td>
+                                        <td>{{ roadmap.description|default('No description', true)|truncate(100) }}</td>
+                                        <td>{{ roadmap.owner|default('Not assigned', true) }}</td>
+                                        <td>{{ roadmap.created_date[:10] }}</td>
+                                        <td>
+                                            <span class="badge badge-{% if roadmap.status == 'Active' %}success{% elif roadmap.status == 'Draft' %}secondary{% else %}primary{% endif %}">
+                                                {{ roadmap.status }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <div class="btn-group">
+                                                <a href="{{ url_for('roadmap.view_roadmap', roadmap_id=roadmap.id) }}" 
+                                                   class="btn btn-sm btn-outline-primary">
+                                                    <i class="fas fa-eye"></i> View
+                                                </a>
+                                                <a href="{{ url_for('roadmap.view_backlog', roadmap_id=roadmap.id) }}" 
+                                                   class="btn btn-sm btn-outline-secondary">
+                                                    <i class="fas fa-list"></i> Backlog
+                                                </a>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="card shadow">
+                    <div class="card-body text-center py-5">
+                        <div class="mb-3">
+                            <i class="fas fa-route fa-4x text-muted"></i>
+                        </div>
+                        <h4>No Implementation Roadmaps Yet</h4>
+                        <p class="text-muted">Create your first roadmap to start planning your AI governance implementation.</p>
+                        <a href="{{ url_for('roadmap.create_roadmap') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create First Roadmap
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">What is an Implementation Roadmap?</h6>
+                </div>
+                <div class="card-body">
+                    <p>An Implementation Roadmap helps you organize, prioritize, and track the execution of your AI governance controls.</p>
+                    <p>With this feature, you can:</p>
+                    <ul>
+                        <li>Create a backlog of controls that need implementation</li>
+                        <li>Organize work into time-bound sprints</li>
+                        <li>Track implementation progress from backlog to completion</li>
+                        <li>Assign controls to team members and set priorities</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="card shadow">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Getting Started</h6>
+                </div>
+                <div class="card-body">
+                    <p>Follow these steps to create and manage your implementation roadmap:</p>
+                    <ol>
+                        <li>Create a new roadmap with a descriptive name</li>
+                        <li>Add governance controls to your backlog</li>
+                        <li>Create sprints to organize your implementation timeline</li>
+                        <li>Move items from backlog to sprints</li>
+                        <li>Track progress as items move from To Do to Done</li>
+                    </ol>
+                    <p>You can also add controls directly from your audit sessions when you identify compliance gaps.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.table th, .table td {
+    vertical-align: middle;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Optional: Initialize a data table for sortable columns
+    if (typeof $.fn.DataTable !== 'undefined') {
+        $('#roadmapsTable').DataTable({
+            "order": [[3, "desc"]], // Sort by created date (newest first)
+            "pageLength": 10,
+            "lengthMenu": [[10, 25, 50, -1], [10, 25, 50, "All"]]
+        });
+    }
+});
+</script>
+{% endblock %}
