@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>ASIMOV AI Governance Audit Tool</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', 'Roboto', sans-serif;
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #F5F6FA;
+            color: #1C2541;
+        }
+        h1, h2 {
+            font-family: 'Montserrat', 'Inter', sans-serif;
+            color: #1C2541;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+            letter-spacing: 0.01em;
+        }
+        .form-group {
+            margin-bottom: 25px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #1C2541;
+        }
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+            color: #1C2541;
+            background-color: white;
+        }
+        button {
+            background-color: #00C9A7;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        button:hover {
+            background-color: #00B096;
+        }
+        .card {
+            border: 1px solid #eaeaea;
+            border-radius: 8px;
+            padding: 25px;
+            margin-bottom: 30px;
+            background-color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+        .nav-links {
+            margin-bottom: 25px;
+        }
+        .nav-links a {
+            margin-right: 20px;
+            color: #00C9A7;
+            text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
+        }
+        .nav-links a:hover {
+            color: #00B096;
+            text-decoration: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Home</a>
+        <a href="/audits">View Previous Audits</a>
+        <a href="/reports">Reports & Analytics</a>
+        <a href="/roadmap/list">Implementation Roadmaps</a>
+    </div>
+    
+    <h1>ASIMOV AI Governance Audit Tool</h1>
+    
+    <div class="card">
+        <h2>Start New AI Governance Audit</h2>
+        <p>Select criteria to focus your audit on specific frameworks, categories, or risk levels.</p>
+        
+        <form action="/start-audit" method="post">
+            <div class="form-group">
+                <label for="session_name">Audit Name:</label>
+                <input type="text" id="session_name" name="session_name" placeholder="e.g., Q2 2025 AI Compliance Review" required>
+            
+        {% if demo_status and demo_status.status == 'demo' %}
+        <div class="alert alert-info mt-3" role="alert">
+            <strong>{{ demo_status.message }}</strong>
+            <div class="mt-2">
+                <a href="/demo/create-session" class="btn btn-sm btn-outline-primary">Launch Demo Session</a>
+                <small class="text-muted ms-2">Pre-populated with sample responses for smooth presentations</small>
+            </div>
+        </div>
+        {% endif %}
+        </div>
+            
+            <div class="form-group">
+                <label for="framework_reference" title="Select the most relevant framework guiding this control.">Framework:</label>
+                <select id="framework_reference" name="framework_filter">
+                    <option value="Unified Framework (ASIMOV-AI)" selected>Unified Framework (ASIMOV-AI)</option>
+                    <option value="EU AI Act (2023)">EU AI Act (2023)</option>
+                    <option value="GDPR – Articles 13–22">GDPR – Articles 13–22</option>
+                    <option value="NIST AI Risk Management Framework (AI RMF v1.0)">NIST AI Risk Management Framework (AI RMF v1.0)</option>
+                    <option value="ISO/IEC 42001 – AI Management Systems">ISO/IEC 42001 – AI Management Systems</option>
+                    <option value="ISACA AI Audit Toolkit">ISACA AI Audit Toolkit</option>
+                    <option value="OWASP Top 10 for LLMs">OWASP Top 10 for LLMs</option>
+                    <option value="MITRE ATLAS – Adversarial ML Threats">MITRE ATLAS – Adversarial ML Threats</option>
+                    <option value="Microsoft Responsible AI Security & Copilot Guidelines">Microsoft Responsible AI Security & Copilot Guidelines</option>
+                    <option value="SHERPA Project – Ethical AI Governance">SHERPA Project – Ethical AI Governance</option>
+                    <option value="Ada Lovelace Institute Recommendations">Ada Lovelace Institute Recommendations</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="category_filter">Category (Optional):</label>
+                <select id="category_filter" name="category_filter">
+                    <option value="">All Categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}">{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="risk_level_filter">Risk Level (Optional):</label>
+                <select id="risk_level_filter" name="risk_level_filter">
+                    <option value="">All Risk Levels</option>
+                    {% for risk_level in risk_levels %}
+                    <option value="{{ risk_level }}">{{ risk_level }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="industry_sector">Industry Sector (Optional):</label>
+                <select id="industry_sector" name="sector_filter">
+                    <option value="">All Sectors</option>
+                    <option value="Financial Services">Financial Services</option>
+                    <option value="Healthcare">Healthcare</option>
+                    <option value="Government">Government</option>
+                    <option value="Technology">Technology</option>
+                    <option value="Education">Education</option>
+                    <option value="Legal & Compliance">Legal & Compliance</option>
+                    <option value="Manufacturing">Manufacturing</option>
+                    <option value="Retail & eCommerce">Retail & eCommerce</option>
+                    <option value="Energy & Utilities">Energy & Utilities</option>
+                    <option value="Transportation & Logistics">Transportation & Logistics</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="region">Region (Optional):</label>
+                <select id="region" name="region_filter">
+                    <option value="">All Regions</option>
+                    <option value="European Union">European Union</option>
+                    <option value="United States">United States</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Asia-Pacific">Asia-Pacific</option>
+                    <option value="Canada">Canada</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Middle East & North Africa">Middle East & North Africa</option>
+                    <option value="Sub-Saharan Africa">Sub-Saharan Africa</option>
+                    <option value="Latin America">Latin America</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="startAuditBtn">Start Audit</button>
+            
+            <!-- Loading spinner with message - hidden by default -->
+            <div id="loadingSpinner" style="display: none; text-align: center; margin-top: 20px;">
+                <div class="spinner" style="display: inline-block; width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid #4CAF50; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+                <p style="margin-top: 10px; font-weight: bold; color: #4CAF50;">Generating unique Life-Wise Insights for your selected framework, sector, and region...</p>
+            </div>
+            
+            <style>
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+            </style>
+            
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.querySelector('form');
+                    const startBtn = document.getElementById('startAuditBtn');
+                    const loadingSpinner = document.getElementById('loadingSpinner');
+                    
+                    form.addEventListener('submit', function() {
+                        // Hide the button and show loading spinner
+                        startBtn.style.display = 'none';
+                        loadingSpinner.style.display = 'block';
+                        
+                        // Submit the form after a slight delay to ensure spinner is visible
+                        return true;
+                    });
+                });
+            </script>
+        </form>
+    </div>
+    
+    <div class="card">
+        <h2>About This Tool</h2>
+        <p>This ASIMOV AI Governance Audit Tool helps organizations assess their AI systems against multiple governance frameworks including:</p>
+        <ul>
+            <li>NIST AI Risk Management Framework</li>
+            <li>EU AI Act</li>
+            <li>Secure Controls Framework (SCF)</li>
+            <li>And more...</li>
+        </ul>
+        <p>The tool uses a unified framework approach to help you identify gaps in your AI governance program and prioritize remediation efforts.</p>
+    </div>
+</body>
+</html>
