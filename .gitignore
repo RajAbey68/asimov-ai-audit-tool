@@ -42,6 +42,7 @@ env/
 *.key
 
 # Database
+# Note: audit_controls.db IS tracked in repo (contains framework controls)
 *.db-journal
 *.db-wal
 
