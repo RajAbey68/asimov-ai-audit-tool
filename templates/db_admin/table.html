@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ table_name }} - Database Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-links a:hover {
+            background-color: #0b7dda;
+        }
+        .pagination {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .pagination a, .pagination span {
+            display: inline-block;
+            padding: 8px 16px;
+            text-decoration: none;
+            border: 1px solid #ddd;
+            margin: 0 4px;
+        }
+        .pagination a {
+            background-color: #2196F3;
+            color: white;
+        }
+        .pagination span {
+            background-color: #f1f1f1;
+            color: #666;
+        }
+        .pagination a:hover {
+            background-color: #0b7dda;
+        }
+        .table-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .per-page-form {
+            display: inline-block;
+            margin-left: 15px;
+        }
+        .per-page-form select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Main App</a>
+        <a href="/db_admin/">Database Home</a>
+        <a href="/db_admin/query">Custom Query</a>
+        <a href="/db_admin/export">Export Data</a>
+        <a href="/db_admin/analysis">Analysis</a>
+    </div>
+    
+    <h1>{{ table_name|capitalize }} Table</h1>
+    
+    <div class="table-info">
+        <div>
+            <p><strong>Total Records:</strong> {{ total_records }}</p>
+            <p><strong>Showing:</strong> {{ (page - 1) * per_page + 1 }} - {{ min((page) * per_page, total_records) }}</p>
+        </div>
+        
+        <div>
+            <form method="get" class="per-page-form">
+                <label for="per_page">Records per page:</label>
+                <select id="per_page" name="per_page" onchange="this.form.submit()">
+                    <option value="10" {% if per_page == 10 %}selected{% endif %}>10</option>
+                    <option value="25" {% if per_page == 25 %}selected{% endif %}>25</option>
+                    <option value="50" {% if per_page == 50 %}selected{% endif %}>50</option>
+                    <option value="100" {% if per_page == 100 %}selected{% endif %}>100</option>
+                </select>
+            </form>
+        </div>
+    </div>
+    
+    <div class="card">
+        {% if records %}
+        <div style="overflow-x: auto;">
+            <table>
+                <thead>
+                    <tr>
+                        {% for column in columns %}
+                        <th>{{ column.name }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for record in records %}
+                    <tr>
+                        {% for column in columns %}
+                        <td title="{{ record[column.name] }}">{{ record[column.name] }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination">
+            {% if page > 1 %}
+            <a href="{{ url_for('db_admin.view_table', table_name=table_name, page=page-1, per_page=per_page) }}">&laquo; Previous</a>
+            {% else %}
+            <span>&laquo; Previous</span>
+            {% endif %}
+            
+            {% for p in range(max(1, page-2), min(total_pages+1, page+3)) %}
+            {% if p == page %}
+            <span>{{ p }}</span>
+            {% else %}
+            <a href="{{ url_for('db_admin.view_table', table_name=table_name, page=p, per_page=per_page) }}">{{ p }}</a>
+            {% endif %}
+            {% endfor %}
+            
+            {% if page < total_pages %}
+            <a href="{{ url_for('db_admin.view_table', table_name=table_name, page=page+1, per_page=per_page) }}">Next &raquo;</a>
+            {% else %}
+            <span>Next &raquo;</span>
+            {% endif %}
+        </div>
+        {% else %}
+        <p>No records found in the table.</p>
+        {% endif %}
+        
+        <div style="margin-top: 20px;">
+            <a href="{{ url_for('db_admin.export_data') }}?export_type=table&table_name={{ table_name }}&file_format=csv" class="button">Export as CSV</a>
+            <a href="{{ url_for('db_admin.export_data') }}?export_type=table&table_name={{ table_name }}&file_format=json" class="button">Export as JSON</a>
+        </div>
+    </div>
+</body>
+</html>
