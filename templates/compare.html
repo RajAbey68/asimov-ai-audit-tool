@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Compare AI Governance Audits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+    .meta-info {
+      margin-bottom: 20px;
+      font-size: 0.9em;
+      color: #666;
+      display: flex;
+      justify-content: space-between;
+    }
+    .meta-column {
+      flex: 1;
+      margin-right: 15px;
+      padding: 10px;
+      background-color: #f0f0f0;
+      border-radius: 4px;
+    }
+    .comparison-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    .comparison-table th, .comparison-table td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    .comparison-table th {
+      background-color: #f2f2f2;
+    }
+    .comparison-table tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    .comparison-table tr:hover {
+      background-color: #f0f0f0;
+    }
+    .score {
+      font-weight: bold;
+      text-align: center;
+    }
+    .improved {
+      color: #4CAF50;
+    }
+    .declined {
+      color: #F44336;
+    }
+    .unchanged {
+      color: #2196F3;
+    }
+    .difference {
+      font-size: 0.8em;
+      margin-left: 5px;
+    }
+    .bar-container {
+      display: flex;
+      height: 20px;
+      width: 100%;
+      border-radius: 4px;
+      overflow: hidden;
+      margin-top: 3px;
+    }
+    .bar {
+      height: 100%;
+    }
+    .bar1 {
+      background-color: #2196F3;
+    }
+    .bar2 {
+      background-color: #4CAF50;
+    }
+    .nav-links {
+      margin-bottom: 20px;
+    }
+    .nav-links a {
+      margin-right: 15px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .button {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .button-secondary {
+      background-color: #2196F3;
+    }
+    .button-secondary:hover {
+      background-color: #0b7dda;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/audits">View Previous Audits</a>
+  </div>
+  
+  <h1>Compare AI Governance Audits</h1>
+  
+  <div class="meta-info">
+    <div class="meta-column">
+      <h3>{{ audit_sessions[session_id1].session_name }}</h3>
+      <p><strong>Date:</strong> {{ audit_sessions[session_id1].session_date }}</p>
+      <p>
+        <strong>Filters:</strong><br>
+        {% if audit_sessions[session_id1].framework_filter %}Framework: {{ audit_sessions[session_id1].framework_filter }}<br>{% endif %}
+        {% if audit_sessions[session_id1].category_filter %}Category: {{ audit_sessions[session_id1].category_filter }}<br>{% endif %}
+        {% if audit_sessions[session_id1].risk_level_filter %}Risk Level: {{ audit_sessions[session_id1].risk_level_filter }}{% endif %}
+      </p>
+    </div>
+    
+    <div class="meta-column">
+      <h3>{{ audit_sessions[session_id2].session_name }}</h3>
+      <p><strong>Date:</strong> {{ audit_sessions[session_id2].session_date }}</p>
+      <p>
+        <strong>Filters:</strong><br>
+        {% if audit_sessions[session_id2].framework_filter %}Framework: {{ audit_sessions[session_id2].framework_filter }}<br>{% endif %}
+        {% if audit_sessions[session_id2].category_filter %}Category: {{ audit_sessions[session_id2].category_filter }}<br>{% endif %}
+        {% if audit_sessions[session_id2].risk_level_filter %}Risk Level: {{ audit_sessions[session_id2].risk_level_filter }}{% endif %}
+      </p>
+    </div>
+  </div>
+  
+  <!-- Category Comparison -->
+  <div class="card">
+    <h2>Compliance by Category</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Category</th>
+          <th>{{ audit_sessions[session_id1].session_name }}</th>
+          <th>{{ audit_sessions[session_id2].session_name }}</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comparison in category_comparison %}
+        <tr>
+          <td>{{ comparison.category }}</td>
+          <td class="score">
+            {{ "%.2f"|format(comparison.score1 if comparison.score1 else 0) }}
+            <small>({{ comparison.count1 }})</small>
+            <div class="bar-container">
+              <div class="bar bar1" style="width: {{ (comparison.score1/4)*100 if comparison.score1 else 0 }}%;"></div>
+            </div>
+          </td>
+          <td class="score">
+            {{ "%.2f"|format(comparison.score2 if comparison.score2 else 0) }}
+            <small>({{ comparison.count2 }})</small>
+            <div class="bar-container">
+              <div class="bar bar2" style="width: {{ (comparison.score2/4)*100 if comparison.score2 else 0 }}%;"></div>
+            </div>
+          </td>
+          <td class="score {% if comparison.score2 > comparison.score1 %}improved{% elif comparison.score2 < comparison.score1 %}declined{% else %}unchanged{% endif %}">
+            {% if comparison.score2 is not none and comparison.score1 is not none %}
+              {% set diff = comparison.score2 - comparison.score1 %}
+              {% if diff > 0 %}+{% endif %}{{ "%.2f"|format(diff) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <!-- Framework Comparison -->
+  <div class="card">
+    <h2>Compliance by Framework</h2>
+    <table class="comparison-table">
+      <thead>
+        <tr>
+          <th>Framework</th>
+          <th>{{ audit_sessions[session_id1].session_name }}</th>
+          <th>{{ audit_sessions[session_id2].session_name }}</th>
+          <th>Change</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for comparison in framework_comparison %}
+        <tr>
+          <td>{{ comparison.framework }}</td>
+          <td class="score">
+            {{ "%.2f"|format(comparison.score1 if comparison.score1 else 0) }}
+            <small>({{ comparison.count1 }})</small>
+            <div class="bar-container">
+              <div class="bar bar1" style="width: {{ (comparison.score1/4)*100 if comparison.score1 else 0 }}%;"></div>
+            </div>
+          </td>
+          <td class="score">
+            {{ "%.2f"|format(comparison.score2 if comparison.score2 else 0) }}
+            <small>({{ comparison.count2 }})</small>
+            <div class="bar-container">
+              <div class="bar bar2" style="width: {{ (comparison.score2/4)*100 if comparison.score2 else 0 }}%;"></div>
+            </div>
+          </td>
+          <td class="score {% if comparison.score2 > comparison.score1 %}improved{% elif comparison.score2 < comparison.score1 %}declined{% else %}unchanged{% endif %}">
+            {% if comparison.score2 is not none and comparison.score1 is not none %}
+              {% set diff = comparison.score2 - comparison.score1 %}
+              {% if diff > 0 %}+{% endif %}{{ "%.2f"|format(diff) }}
+            {% else %}
+              N/A
+            {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  
+  <div>
+    <a href="/summary/{{ session_id1 }}" class="button">View First Audit</a>
+    <a href="/summary/{{ session_id2 }}" class="button">View Second Audit</a>
+    <a href="/" class="button button-secondary">Start New Audit</a>
+  </div>
+</body>
+</html>
