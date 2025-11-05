@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Custom Query - Database Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            font-size: 0.9em;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+            max-width: 200px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        th {
+            background-color: #f2f2f2;
+            position: sticky;
+            top: 0;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        tr:hover {
+            background-color: #f1f1f1;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-links a:hover {
+            background-color: #0b7dda;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: monospace;
+            margin-bottom: 15px;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .error {
+            color: #f44336;
+            padding: 10px;
+            background-color: #ffebee;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+        .scroll-container {
+            overflow-x: auto;
+            max-height: 400px;
+            margin-top: 20px;
+        }
+        .schema-info {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f5f5f5;
+            border-radius: 4px;
+        }
+        .schema-table {
+            margin-bottom: 15px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Main App</a>
+        <a href="/db_admin/">Database Home</a>
+        <a href="/db_admin/query">Custom Query</a>
+        <a href="/db_admin/export">Export Data</a>
+        <a href="/db_admin/analysis">Analysis</a>
+    </div>
+    
+    <h1>Custom SQL Query</h1>
+    
+    <div class="card">
+        <form method="post">
+            <label for="query"><strong>Enter SQL Query:</strong></label>
+            <textarea id="query" name="query" placeholder="SELECT * FROM controls LIMIT 10">{{ query }}</textarea>
+            
+            <div>
+                <button type="submit" class="button">Execute Query</button>
+                <button type="button" id="exportBtn" class="button" style="margin-left: 10px;">Export Results</button>
+            </div>
+        </form>
+        
+        {% if error %}
+        <div class="error">
+            <strong>Error:</strong> {{ error }}
+        </div>
+        {% endif %}
+        
+        {% if results %}
+        <div class="scroll-container">
+            <table>
+                <thead>
+                    <tr>
+                        {% for key in results[0].keys() %}
+                        <th>{{ key }}</th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                    <tr>
+                        {% for key, value in row.items() %}
+                        <td title="{{ value }}">{{ value }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <p><strong>{{ results|length }} row(s) returned</strong></p>
+        {% endif %}
+    </div>
+    
+    <div class="card schema-info">
+        <h2>Database Schema Reference</h2>
+        
+        <div class="schema-table">
+            <h3>controls</h3>
+            <p>The main table of AI governance framework controls.</p>
+            <ul>
+                <li><strong>id</strong> - INTEGER PRIMARY KEY</li>
+                <li><strong>control_name</strong> - TEXT</li>
+                <li><strong>category</strong> - TEXT</li>
+                <li><strong>framework</strong> - TEXT</li>
+                <li><strong>explainability</strong> - TEXT</li>
+                <li><strong>description</strong> - TEXT</li>
+                <li><strong>evidence</strong> - TEXT</li>
+                <li><strong>risk_level</strong> - TEXT</li>
+            </ul>
+        </div>
+        
+        <div class="schema-table">
+            <h3>responses</h3>
+            <p>User responses from audit questionnaires.</p>
+            <ul>
+                <li><strong>id</strong> - INTEGER PRIMARY KEY</li>
+                <li><strong>session_id</strong> - TEXT</li>
+                <li><strong>control_id</strong> - INTEGER</li>
+                <li><strong>framework</strong> - TEXT</li>
+                <li><strong>category</strong> - TEXT</li>
+                <li><strong>response_score</strong> - INTEGER (1-4)</li>
+                <li><strong>reference_text</strong> - TEXT</li>
+                <li><strong>timestamp</strong> - DATETIME</li>
+            </ul>
+        </div>
+        
+        <div class="schema-table">
+            <h3>audit_sessions</h3>
+            <p>Records of individual audit sessions.</p>
+            <ul>
+                <li><strong>session_id</strong> - TEXT PRIMARY KEY</li>
+                <li><strong>session_name</strong> - TEXT</li>
+                <li><strong>framework_filter</strong> - TEXT</li>
+                <li><strong>category_filter</strong> - TEXT</li>
+                <li><strong>risk_level_filter</strong> - TEXT</li>
+                <li><strong>session_date</strong> - DATETIME</li>
+            </ul>
+        </div>
+    </div>
+    
+    <script>
+        // Handle export button
+        document.getElementById('exportBtn').addEventListener('click', function() {
+            const query = document.getElementById('query').value;
+            
+            if (!query.trim()) {
+                alert('Please enter a query first');
+                return;
+            }
+            
+            // Create form for export
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = '/db_admin/export';
+            
+            // Add query field
+            const queryField = document.createElement('input');
+            queryField.type = 'hidden';
+            queryField.name = 'query';
+            queryField.value = query;
+            form.appendChild(queryField);
+            
+            // Add export type field
+            const typeField = document.createElement('input');
+            typeField.type = 'hidden';
+            typeField.name = 'export_type';
+            typeField.value = 'custom';
+            form.appendChild(typeField);
+            
+            // Add format field
+            const formatField = document.createElement('input');
+            formatField.type = 'hidden';
+            formatField.name = 'file_format';
+            formatField.value = 'csv';
+            form.appendChild(formatField);
+            
+            // Submit the form
+            document.body.appendChild(form);
+            form.submit();
+            document.body.removeChild(form);
+        });
+    </script>
+</body>
+</html>
