@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Governance Audit Summary</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+    .meta-info {
+      margin-bottom: 20px;
+      font-size: 0.9em;
+      color: #666;
+    }
+    .score-section {
+      margin-bottom: 30px;
+    }
+    .score-container {
+      display: flex;
+      align-items: center;
+      margin-bottom: 10px;
+      padding: 5px;
+      border-radius: 4px;
+    }
+    .score-container:hover {
+      background-color: #f0f0f0;
+    }
+    .score-label {
+      flex: 1;
+      font-weight: bold;
+    }
+    .score-value {
+      width: 80px;
+      text-align: center;
+      font-size: 1.2em;
+      font-weight: bold;
+    }
+    .score-count {
+      width: 50px;
+      text-align: center;
+      color: #666;
+      font-size: 0.8em;
+    }
+    .score-bar-container {
+      flex: 2;
+      height: 20px;
+      background-color: #e0e0e0;
+      border-radius: 4px;
+      margin: 0 10px;
+    }
+    .score-bar {
+      height: 20px;
+      border-radius: 4px;
+    }
+    .score-excellent {
+      background-color: #4CAF50;
+    }
+    .score-good {
+      background-color: #8BC34A;
+    }
+    .score-fair {
+      background-color: #FFC107;
+    }
+    .score-poor {
+      background-color: #F44336;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+    .nav-links {
+      margin-bottom: 20px;
+    }
+    .nav-links a {
+      margin-right: 15px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .button {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      margin-right: 10px;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .button-secondary {
+      background-color: #2196F3;
+    }
+    .button-secondary:hover {
+      background-color: #0b7dda;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-links">
+    <a href="/">Home</a>
+    <a href="/audits">View Previous Audits</a>
+  </div>
+  
+  <h1>AI Governance Audit Summary</h1>
+  
+  <div class="meta-info">
+    <p><strong>Audit Name:</strong> {{ audit_session.session_name }}</p>
+    <p><strong>Session ID:</strong> {{ session_id }}</p>
+    <p><strong>Date:</strong> {{ audit_session.session_date }}</p>
+    {% if audit_session.framework_filter or audit_session.category_filter or audit_session.risk_level_filter %}
+    <p><strong>Filters Applied:</strong>
+      {% if audit_session.framework_filter %}Framework: {{ audit_session.framework_filter }}{% endif %}
+      {% if audit_session.category_filter %}Category: {{ audit_session.category_filter }}{% endif %}
+      {% if audit_session.risk_level_filter %}Risk Level: {{ audit_session.risk_level_filter }}{% endif %}
+    </p>
+    {% endif %}
+  </div>
+  
+  <!-- Overall Score -->
+  <div class="card">
+    <h2>Overall Compliance Score</h2>
+    <div class="score-container">
+      <div class="score-label">Overall</div>
+      <div class="score-bar-container">
+        <div class="score-bar {% if overall.avg_score >= 3.5 %}score-excellent{% elif overall.avg_score >= 2.5 %}score-good{% elif overall.avg_score >= 1.5 %}score-fair{% else %}score-poor{% endif %}" 
+             style="width: {{ (overall.avg_score/4)*100 }}%;">
+        </div>
+      </div>
+      <div class="score-value">{{ "%.2f"|format(overall.avg_score) }}/4.00</div>
+      <div class="score-count">({{ overall.count }})</div>
+    </div>
+    
+    <div class="score-key">
+      <small>
+        <span style="color: #4CAF50;">■</span> Excellent (3.5-4.0) &nbsp;
+        <span style="color: #8BC34A;">■</span> Good (2.5-3.4) &nbsp;
+        <span style="color: #FFC107;">■</span> Fair (1.5-2.4) &nbsp;
+        <span style="color: #F44336;">■</span> Poor (1.0-1.4)
+      </small>
+    </div>
+  </div>
+  
+  <!-- Category Scores -->
+  <div class="card score-section">
+    <h2>Compliance by Category</h2>
+    {% for score in category_scores %}
+    <div class="score-container">
+      <div class="score-label">{{ score.category }}</div>
+      <div class="score-bar-container">
+        <div class="score-bar {% if score.avg_score >= 3.5 %}score-excellent{% elif score.avg_score >= 2.5 %}score-good{% elif score.avg_score >= 1.5 %}score-fair{% else %}score-poor{% endif %}" 
+             style="width: {{ (score.avg_score/4)*100 }}%;">
+        </div>
+      </div>
+      <div class="score-value">{{ "%.2f"|format(score.avg_score) }}</div>
+      <div class="score-count">({{ score.count }})</div>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Framework Scores -->
+  <div class="card score-section">
+    <h2>Compliance by Framework</h2>
+    {% for score in framework_scores %}
+    <div class="score-container">
+      <div class="score-label">{{ score.framework }}</div>
+      <div class="score-bar-container">
+        <div class="score-bar {% if score.avg_score >= 3.5 %}score-excellent{% elif score.avg_score >= 2.5 %}score-good{% elif score.avg_score >= 1.5 %}score-fair{% else %}score-poor{% endif %}" 
+             style="width: {{ (score.avg_score/4)*100 }}%;">
+        </div>
+      </div>
+      <div class="score-value">{{ "%.2f"|format(score.avg_score) }}</div>
+      <div class="score-count">({{ score.count }})</div>
+    </div>
+    {% endfor %}
+  </div>
+  
+  <!-- Gap Analysis -->
+  <div class="card">
+    <h2>Gap Analysis</h2>
+    <p>The following controls have low compliance scores (2 or lower) and may require remediation:</p>
+    
+    {% if gaps %}
+    <table>
+      <thead>
+        <tr>
+          <th>Control</th>
+          <th>Category</th>
+          <th>Score</th>
+          <th>Notes</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for gap in gaps %}
+        <tr>
+          <td>{{ gap.control_name }}</td>
+          <td>{{ gap.category }}</td>
+          <td>{{ gap.response_score }}/4</td>
+          <td>{{ gap.reference_text }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p>No significant compliance gaps found! All controls scored above 2.0.</p>
+    {% endif %}
+  </div>
+  
+  <div>
+    <a href="/" class="button">Start New Audit</a>
+    <a href="/audits" class="button button-secondary">View All Audits</a>
+  </div>
+</body>
+</html>
