@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ASIMOV AI Governance Audit - Style Preview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Montserrat:wght@600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ASIMOV-AI Style Guide v1.0 
+       Primary: #00C9A7 (Electric Teal)
+       Secondary: #1C2541 (Midnight Blue)
+       Background: #F5F6FA (Light Gray Blue)
+       Fonts: Inter & Montserrat
+    */
+    
+    /* Base styles */
+    body {
+      font-family: 'Inter', 'Roboto', sans-serif;
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+      background-color: #F5F6FA;
+      color: #1C2541;
+    }
+    
+    h1, h2, h3 {
+      font-family: 'Montserrat', 'Inter', sans-serif;
+      color: #1C2541;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+      letter-spacing: 0.01em;
+    }
+    
+    /* Card components */
+    .card {
+      border: 1px solid #eaeaea;
+      border-radius: 8px;
+      padding: 25px;
+      margin-bottom: 30px;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+    
+    /* Progress tracking */
+    .progress-container {
+      width: 100%;
+      background-color: #e0e0e0;
+      border-radius: 8px;
+      margin: 25px 0;
+      overflow: hidden;
+    }
+    
+    .progress-bar {
+      height: 30px;
+      background-color: #00C9A7;
+      border-radius: 4px;
+      text-align: right;
+      color: white;
+      padding-right: 10px;
+      line-height: 30px;
+      font-size: 14px;
+      font-weight: 600;
+      width: 40%;
+    }
+    
+    /* Control information */
+    .control-info {
+      margin-bottom: 30px;
+      line-height: 1.6;
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+    }
+    
+    /* Meta tags */
+    .meta-info {
+      display: flex;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      gap: 8px;
+    }
+    
+    .meta-tag {
+      background-color: #00C9A7;
+      color: white;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    
+    /* Pillar-specific tag colors */
+    .meta-tag.pillar-a {
+      background-color: #4361EE; /* Accountability */
+    }
+    
+    .meta-tag.pillar-s {
+      background-color: #F72585; /* Security */
+    }
+    
+    .meta-tag.pillar-i {
+      background-color: #7209B7; /* Integrity */
+    }
+    
+    .meta-tag.pillar-m {
+      background-color: #3A0CA3; /* Management */
+    }
+    
+    .meta-tag.pillar-o {
+      background-color: #4CC9F0; /* Operations */
+    }
+    
+    .meta-tag.pillar-v {
+      background-color: #FB8500; /* Validation */
+    }
+    
+    /* Navigation */
+    .nav-links {
+      margin-bottom: 25px;
+    }
+    
+    .nav-links a {
+      margin-right: 20px;
+      color: #00C9A7;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+    
+    .nav-links a:hover {
+      color: #00B096;
+      text-decoration: none;
+    }
+    
+    /* Buttons */
+    button {
+      background-color: #00C9A7;
+      color: white;
+      padding: 10px 18px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: 600;
+      transition: all 0.2s;
+      display: inline-flex;
+      align-items: center;
+    }
+    
+    button:hover {
+      background-color: #00B096;
+      box-shadow: 0 2px 6px rgba(0, 201, 167, 0.3);
+    }
+    
+    button.secondary {
+      background-color: transparent;
+      border: 2px solid #1C2541;
+      color: #1C2541;
+    }
+    
+    button.secondary:hover {
+      background-color: #1C2541;
+      color: white;
+    }
+    
+    button.with-spinner {
+      position: relative;
+      padding-right: 42px;
+    }
+    
+    /* Loading spinner */
+    .spinner {
+      border: 4px solid #F5F6FA;
+      border-top: 4px solid #00C9A7;
+      border-radius: 50%;
+      width: 24px;
+      height: 24px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      margin-left: 10px;
+      vertical-align: middle;
+    }
+    
+    /* Framework section */
+    .framework-section {
+      margin-top: 20px;
+      padding: 16px;
+      background-color: rgba(0, 201, 167, 0.1);
+      border-radius: 6px;
+      border-left: 4px solid #00C9A7;
+    }
+    
+    /* Insight container */
+    .insight-container {
+      background-color: white;
+      padding: 22px;
+      border-left: 4px solid #00C9A7;
+      margin-bottom: 22px;
+      border-radius: 8px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+      line-height: 1.6;
+    }
+    
+    .control-dialog {
+      background-color: white;
+      padding: 22px;
+      border-radius: 8px;
+      margin-bottom: 25px;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+    }
+    
+    .button-group {
+      display: flex;
+      gap: 12px;
+    }
+    
+    /* Form elements with improved styling */
+    select, textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 18px;
+      border: 2px solid #00C9A7;
+      border-radius: 6px;
+      box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+      color: #1C2541;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300C9A7' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+      background-repeat: no-repeat;
+      background-position: right 1rem center;
+      background-size: 1em;
+    }
+    
+    select:hover, textarea:hover {
+      border-color: #00B096;
+      box-shadow: 0 0 0 3px rgba(0, 201, 167, 0.1);
+    }
+    
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: #00B096;
+      box-shadow: 0 0 0 3px rgba(0, 201, 167, 0.2);
+    }
+    
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-weight: 600;
+      color: #1C2541;
+    }
+    
+    /* Modal overlay for confirmations */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(28, 37, 65, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    
+    .modal-content {
+      background: white;
+      padding: 25px;
+      border-radius: 8px;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    }
+    
+    /* Animations */
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      body {
+        padding: 15px;
+      }
+      
+      .button-group {
+        flex-direction: column;
+      }
+      
+      .meta-info {
+        flex-direction: column;
+        gap: 5px;
+      }
+      
+      .meta-tag {
+        display: inline-block;
+        margin-bottom: 5px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-links">
+    <a href="#">Home</a>
+    <a href="#">View Previous Audits</a>
+  </div>
+  
+  <h1>AI Governance Audit</h1>
+  
+  <div class="progress-container">
+    <div class="progress-bar">{'current': 12, 'total': 251, 'percentage': 4%}</div>
+  </div>
+  
+  <p>Question 12 of 251</p>
+  
+  <div class="card">
+    <h2>Transfer Attack Testing</h2>
+    
+    <div class="meta-info">
+      <span class="meta-tag pillar-s">Adversarial Attack Mitigation Techniques</span>
+      <span class="meta-tag">Risk: High</span>
+      <span class="meta-tag pillar-m">Sector: Financial Services</span>
+    </div>
+    
+    <form>
+      <!-- Dialog boxes at top -->
+      <div class="control-dialog">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; flex-wrap: wrap; gap: 15px;">
+          <div style="flex: 3; min-width: 280px;">
+            <label for="response_score" style="display: inline-block; margin-right: 10px;">Compliance Level:</label>
+            <select name="response_score" required style="width: auto; display: inline-block; padding: 10px 14px;">
+              <option value="4">Always (Fully Compliant)</option>
+              <option value="3" selected>Often (Mostly Compliant)</option>
+              <option value="2">Occasionally (Partially Compliant)</option>
+              <option value="1">Rarely/Never (Non-Compliant)</option>
+            </select>
+          </div>
+          <div class="button-group">
+            <button type="button" class="secondary">Export</button>
+            <button type="submit">Next</button>
+          </div>
+        </div>
+        
+        <!-- Life-Wise Insight section with refresh button -->
+        <div class="insight-container">
+          <div style="display: flex; justify-content: space-between; align-items: flex-start; gap: 15px;">
+            <div>
+              <h3 style="margin-top: 0; margin-bottom: 10px; border-bottom: none; padding-bottom: 0;">Life-Wise Insight</h3>
+              <p style="margin-top: 0; font-size: 16px; line-height: 1.6;">Research from Stanford in 2023 found that Transfer Attack Testing detected 71% of potential vulnerabilities missed by traditional security approaches. One retail organization estimated savings of $3.2M after identifying transfer vulnerabilities in their recommendation system that could have been exploited for market manipulation. Both NIST and EU AI regulatory frameworks now specifically reference transfer attack resilience as a required security control for high-risk systems.</p>
+            </div>
+            <button type="button" id="generateInsightBtn" style="white-space: nowrap; flex-shrink: 0; min-width: 180px;">
+              Generate New Insight
+            </button>
+            <button type="button" id="loadingInsightBtn" style="white-space: nowrap; flex-shrink: 0; min-width: 180px; display: none;">
+              Generating <span class="spinner"></span>
+            </button>
+          </div>
+        </div>
+        
+        <!-- Evidence Reference below Life-Wise Insight -->
+        <div>
+          <label for="reference_text">Evidence Reference (documents, links, notes):</label>
+          <textarea name="reference_text" rows="3" cols="50">We have implemented a comprehensive transfer attack testing program as part of our quarterly security testing cycle. Documentation available in our security repository at https://security.example.com/transfer-testing/</textarea>
+        </div>
+      </div>
+      
+      <div class="control-info">
+        <p><strong>Description:</strong> Develop and implement Transfer Attack Testing controls to detect and mitigate adversarial examples transferable from one model to another.</p>
+        <p><strong>Explainability:</strong> Transfer attacks occur when adversarial examples created for one model can successfully fool different models. This control requires testing for cross-model vulnerability to ensure that defenses protect against transferable adversarial examples.</p>
+        <p><strong>Expected Evidence:</strong> Documentation of transfer attack testing procedures, results of transfer vulnerability assessments, and mitigation measures implemented to address identified vulnerabilities.</p>
+      </div>
+      
+      <div class="framework-section">
+        <p><strong>Frameworks Reference:</strong></p>
+        <p>EU AI Law: Article 15 - Accuracy, robustness and cybersecurity</p>
+        <p>NIST 800-53: SA-11 Developer Testing and Evaluation, RA-5 Vulnerability Monitoring and Scanning</p>
+      </div>
+    </form>
+  </div>
+  <!-- Sample Modal Overlay (hidden by default) -->
+  <div id="confirmModal" class="modal-overlay" style="display: none;">
+    <div class="modal-content">
+      <h3 style="margin-top: 0;">Confirm Action</h3>
+      <p>Are you sure you want to generate a new insight? This will replace the current insight.</p>
+      <div class="button-group" style="justify-content: flex-end; margin-top: 20px;">
+        <button type="button" class="secondary" id="cancelModalBtn">Cancel</button>
+        <button type="button" id="confirmModalBtn">Generate New Insight</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Add interactivity to the Generate New Insight button
+    document.addEventListener('DOMContentLoaded', function() {
+      const generateBtn = document.getElementById('generateInsightBtn');
+      const loadingBtn = document.getElementById('loadingInsightBtn');
+      const modal = document.getElementById('confirmModal');
+      const cancelModalBtn = document.getElementById('cancelModalBtn');
+      const confirmModalBtn = document.getElementById('confirmModalBtn');
+      const insightText = document.querySelector('.insight-container p');
+      
+      // Show confirmation modal when Generate New Insight is clicked
+      generateBtn.addEventListener('click', function() {
+        modal.style.display = 'flex';
+      });
+      
+      // Hide modal when Cancel is clicked
+      cancelModalBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+      });
+      
+      // Process when confirmed
+      confirmModalBtn.addEventListener('click', function() {
+        modal.style.display = 'none';
+        
+        // Show loading state
+        generateBtn.style.display = 'none';
+        loadingBtn.style.display = 'inline-flex';
+        
+        // Simulate API call delay
+        setTimeout(function() {
+          // Update the insight with a new one
+          insightText.innerHTML = 'In a 2024 case study by the Financial Stability Board, a major European bank prevented a $5.8M fraud attempt by implementing Transfer Attack Testing. Their AI models detected patterns that migrated from one prediction system to another. After Microsoft's Copilot incidents in 2023, all financial service providers operating under EU AI Act Article 15 must implement cross-model vulnerability testing, with enforcement beginning January 2026.';
+          
+          // Hide loading state
+          loadingBtn.style.display = 'none';
+          generateBtn.style.display = 'inline-flex';
+        }, 1500);
+      });
+      
+      // Make dropdown styling more apparent
+      const selects = document.querySelectorAll('select');
+      selects.forEach(select => {
+        select.addEventListener('focus', function() {
+          this.style.borderColor = '#00B096';
+          this.style.boxShadow = '0 0 0 3px rgba(0, 201, 167, 0.2)';
+        });
+        
+        select.addEventListener('blur', function() {
+          this.style.borderColor = '#00C9A7';
+          this.style.boxShadow = 'none';
+        });
+      });
+    });
+  </script>
+</body>
+</html>
