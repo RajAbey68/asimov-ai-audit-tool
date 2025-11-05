@@ -1,0 +1,163 @@
+{
+  "Healthcare": {
+    "primary_regulators": ["MHRA", "NHS AI Lab", "FDA", "Health Canada"],
+    "region_context": "UK / EU / US / Canada",
+    "key_docs": [
+      "MHRA Guidance on AI as a Medical Device (AIaMD)",
+      "NHS AI Ethics Framework",
+      "FDA AI/ML-Based Software as Medical Device Action Plan",
+      "EU Medical Device Regulation (MDR) 2017/745"
+    ],
+    "reference_urls": [
+      "https://www.gov.uk/government/organisations/medicines-and-healthcare-products-regulatory-agency",
+      "https://www.nhsx.nhs.uk/ai-lab/",
+      "https://www.fda.gov/medical-devices/software-medical-device-samd/artificial-intelligence-and-machine-learning-aiml-enabled-medical-devices",
+      "https://health-canada.ca/en/health-canada/services/drugs-health-products/medical-devices"
+    ],
+    "key_requirements": [
+      "Clinical evidence requirements for AI/ML medical devices",
+      "Post-market surveillance obligations",
+      "Quality management system compliance",
+      "Risk management per ISO 14971"
+    ],
+    "citation_format": "MHRA AIaMD Guidance (2023), NHS AI Ethics Framework (2022), FDA AI/ML Action Plan (2021)"
+  },
+  "Financial Services": {
+    "primary_regulators": ["FCA", "EBA", "SEC", "CFTC", "OCC"],
+    "region_context": "UK / EU / US",
+    "key_docs": [
+      "FCA AI Governance Overview",
+      "EBA Guidelines on ICT and Security Risk Management",
+      "SEC Staff Bulletin on Robo-Advisers",
+      "OCC Comptroller's Handbook on Model Risk Management"
+    ],
+    "reference_urls": [
+      "https://www.fca.org.uk/publications/multi-firm-reviews/artificial-intelligence-machine-learning",
+      "https://www.eba.europa.eu/regulation-and-policy/internal-governance/guidelines-on-ict-and-security-risk-management",
+      "https://www.sec.gov/investment/im-guidance-2017-02.pdf",
+      "https://www.occ.gov/publications-and-resources/publications/comptrollers-handbook/files/model-risk-management/index-model-risk-management.html"
+    ],
+    "key_requirements": [
+      "Model risk management frameworks",
+      "Algorithmic trading compliance",
+      "Consumer protection in automated advice",
+      "Fair lending and bias prevention"
+    ],
+    "citation_format": "FCA AI Governance (2022), EBA ICT Risk Guidelines (2020), SEC Robo-Adviser Guidance (2017)"
+  },
+  "Government": {
+    "primary_regulators": ["NIST", "OMB", "GSA", "Cabinet Office", "European Commission"],
+    "region_context": "US / UK / EU",
+    "key_docs": [
+      "NIST AI Risk Management Framework",
+      "OMB Memorandum M-24-10 on AI Governance",
+      "UK Government AI White Paper",
+      "EU Ethics Guidelines for Trustworthy AI"
+    ],
+    "reference_urls": [
+      "https://www.nist.gov/itl/ai-risk-management-framework",
+      "https://www.whitehouse.gov/omb/briefing-room/2024/03/28/memorandum-on-advancing-governance-accountability-and-transparency-in-artificial-intelligence/",
+      "https://www.gov.uk/government/publications/ai-regulation-a-pro-innovation-approach/white-paper",
+      "https://digital-strategy.ec.europa.eu/en/library/ethics-guidelines-trustworthy-ai"
+    ],
+    "key_requirements": [
+      "Impact assessments for high-risk AI systems",
+      "Transparency and explainability standards",
+      "Procurement guidelines for AI systems",
+      "Public sector AI ethics frameworks"
+    ],
+    "citation_format": "NIST AI RMF (2023), OMB M-24-10 (2024), UK AI White Paper (2023)"
+  },
+  "Technology": {
+    "primary_regulators": ["FTC", "CNIL", "ICO", "ACMA", "Competition Bureau Canada"],
+    "region_context": "US / EU / UK / Australia / Canada",
+    "key_docs": [
+      "FTC Guidance on AI and Algorithms",
+      "GDPR Article 22 on Automated Decision-Making",
+      "ICO Guidance on AI and Data Protection",
+      "ACMA AI Governance Framework"
+    ],
+    "reference_urls": [
+      "https://www.ftc.gov/business-guidance/blog/2021/04/aiming-truth-fairness-equity-your-companys-use-ai",
+      "https://gdpr.eu/article-22-automated-individual-decision-making/",
+      "https://ico.org.uk/for-organisations/guide-to-data-protection/key-data-protection-themes/artificial-intelligence/",
+      "https://www.acma.gov.au/artificial-intelligence-governance-framework"
+    ],
+    "key_requirements": [
+      "Algorithmic transparency and fairness",
+      "Data protection by design and default",
+      "User consent for automated decision-making",
+      "Bias testing and mitigation procedures"
+    ],
+    "citation_format": "FTC AI Guidance (2021), GDPR Article 22 (2018), ICO AI Guidance (2023)"
+  },
+  "Legal & Compliance": {
+    "primary_regulators": ["SRA", "Law Society", "ABA", "LSAC", "Bar Standards Board"],
+    "region_context": "UK / US / Canada",
+    "key_docs": [
+      "SRA Technology and Legal Services Report",
+      "ABA Model Rules on Technology Competence",
+      "Law Society Practice Note on AI",
+      "Bar Standards Board Guidance on Technology"
+    ],
+    "reference_urls": [
+      "https://www.sra.org.uk/sra/research-publications/technology-legal-services/",
+      "https://www.americanbar.org/groups/professional_responsibility/publications/model_rules_of_professional_conduct/rule_1_1_competence/",
+      "https://www.lawsociety.org.uk/topics/technology/artificial-intelligence",
+      "https://www.barstandardsboard.org.uk/for-barristers/professional-conduct/guidance/technology-guidance.html"
+    ],
+    "key_requirements": [
+      "Professional competence in technology use",
+      "Client confidentiality protection",
+      "Ethical obligations in AI-assisted legal work",
+      "Quality assurance for automated legal processes"
+    ],
+    "citation_format": "SRA Technology Report (2023), ABA Model Rules 1.1 (2022), Law Society AI Guidance (2023)"
+  },
+  "Manufacturing": {
+    "primary_regulators": ["HSE", "OSHA", "CPSC", "CE Marking Authorities"],
+    "region_context": "UK / US / EU",
+    "key_docs": [
+      "HSE Guidance on AI in Manufacturing Safety",
+      "OSHA Guidelines on Workplace AI Systems",
+      "EU Machinery Directive 2006/42/EC",
+      "ISO 12100 Machinery Safety Standards"
+    ],
+    "reference_urls": [
+      "https://www.hse.gov.uk/manufacturing/artificial-intelligence.htm",
+      "https://www.osha.gov/artificial-intelligence",
+      "https://eur-lex.europa.eu/legal-content/EN/TXT/?uri=CELEX:32006L0042",
+      "https://www.iso.org/standard/51528.html"
+    ],
+    "key_requirements": [
+      "Safety risk assessments for AI-controlled machinery",
+      "Human-machine interface safety standards",
+      "Predictive maintenance compliance",
+      "Quality control system validation"
+    ],
+    "citation_format": "HSE AI Manufacturing Guidance (2023), OSHA AI Guidelines (2022), EU Machinery Directive (2006)"
+  },
+  "Education": {
+    "primary_regulators": ["DfE", "ED", "FERPA Office", "ICO Education Team"],
+    "region_context": "UK / US",
+    "key_docs": [
+      "DfE Guidance on AI in Education",
+      "ED AI and Student Privacy Guidelines",
+      "FERPA Compliance for Educational AI",
+      "ICO Age Appropriate Design Code"
+    ],
+    "reference_urls": [
+      "https://www.gov.uk/government/publications/generative-artificial-intelligence-in-education",
+      "https://studentprivacy.ed.gov/resources/artificial-intelligence-and-student-privacy",
+      "https://www.ed.gov/news/press-releases/us-department-education-releases-new-resource-artificial-intelligence-policy-development-educational-leaders",
+      "https://ico.org.uk/for-organisations/guide-to-data-protection/ico-codes-of-practice/age-appropriate-design-code/"
+    ],
+    "key_requirements": [
+      "Student data protection and privacy",
+      "Age-appropriate AI design principles",
+      "Educational equity and accessibility",
+      "Parental consent requirements"
+    ],
+    "citation_format": "DfE AI Education Guidance (2023), ED Student Privacy Guidelines (2023), ICO Age Appropriate Design Code (2020)"
+  }
+}
