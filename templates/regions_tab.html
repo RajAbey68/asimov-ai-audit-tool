@@ -1,0 +1,46 @@
+<!-- Regions Tab Content -->
+<div id="Regions" class="tabcontent">
+    <h2>Add New Region</h2>
+    <div class="form-container">
+        <form action="{{ url_for('add_region') }}" method="post">
+            <div class="form-group">
+                <label for="region_name">Region Name*</label>
+                <input type="text" id="region_name" name="region_name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="region_description">Description</label>
+                <textarea id="region_description" name="region_description"></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-success">Add Region</button>
+        </form>
+    </div>
+    
+    <h2>Available Regions</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Region Name</th>
+                <th>Description</th>
+                <th>Standard</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for region in regions %}
+                <tr>
+                    <td>{{ region.name }}</td>
+                    <td>{{ region.description }}</td>
+                    <td>{{ 'Yes' if region.is_standard else 'No' }}</td>
+                    <td>
+                        <a href="{{ url_for('edit_region', region_id=region.id) }}" class="btn">Edit</a>
+                        {% if not region.is_standard %}
+                            <a href="{{ url_for('delete_region', region_id=region.id) }}" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this region?')">Delete</a>
+                        {% endif %}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
