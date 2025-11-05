@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>AI Governance Audit - {{ control.control_name }}</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2 {
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .section {
+      margin-bottom: 20px;
+      padding: 15px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+    }
+    .meta-info {
+      display: flex;
+      margin-bottom: 15px;
+    }
+    .meta-tag {
+      background-color: #2196F3;
+      color: white;
+      padding: 5px 10px;
+      border-radius: 4px;
+      margin-right: 10px;
+      font-size: 0.9em;
+    }
+    .insight-box {
+      background-color: #f0f8ff;
+      padding: 15px;
+      border-left: 4px solid #4682b4;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+    }
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-weight: bold;
+      font-size: 20px;
+      color: #333;
+    }
+    .date {
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">ASIMOV AI Governance Audit Tool</div>
+    <div class="date">Generated: {{ datetime.datetime.now().strftime('%Y-%m-%d %H:%M') }}</div>
+  </div>
+  
+  <h1>{{ control.control_name }}</h1>
+  
+  <div class="meta-info">
+    {% if control.category %}
+    <span class="meta-tag">{{ control.category }}</span>
+    {% endif %}
+    
+    {% if control.risk_level %}
+    <span class="meta-tag">Risk: {{ control.risk_level }}</span>
+    {% endif %}
+  </div>
+  
+  <!-- Life-Wise Insight at the top -->
+  {% if lifewise_insight %}
+  <div class="insight-box">
+    <h3>Life-Wise Insight:</h3>
+    <p>{{ lifewise_insight }}</p>
+  </div>
+  {% endif %}
+  
+  <div class="section">
+    <h3>Description:</h3>
+    <p>{{ control.description }}</p>
+    
+    {% if control.explainability %}
+    <h3>Explainability:</h3>
+    <p>{{ control.explainability }}</p>
+    {% endif %}
+    
+    {% if control.evidence %}
+    <h3>Expected Evidence:</h3>
+    <p>{{ control.evidence }}</p>
+    {% endif %}
+  </div>
+  
+  <div class="section">
+    <h3>Frameworks Reference:</h3>
+    <p>{{ control.framework }}</p>
+  </div>
+  
+  {% if existing_response %}
+  <div class="section">
+    <h3>Audit Response:</h3>
+    <table>
+      <tr>
+        <th>Compliance Level</th>
+        <td>
+          {% if existing_response.response_score == 4 %}Always (Fully Compliant)
+          {% elif existing_response.response_score == 3 %}Often (Mostly Compliant)
+          {% elif existing_response.response_score == 2 %}Occasionally (Partially Compliant)
+          {% elif existing_response.response_score == 1 %}Rarely/Never (Non-Compliant)
+          {% endif %}
+        </td>
+      </tr>
+      <tr>
+        <th>Evidence Reference</th>
+        <td>{{ existing_response.reference_text }}</td>
+      </tr>
+    </table>
+  </div>
+  {% endif %}
+  
+  <footer>
+    <p>Page {{ question_index + 1 }} of {{ total_questions }}</p>
+    <p>Session ID: {{ session_id }}</p>
+  </footer>
+</body>
+</html>
