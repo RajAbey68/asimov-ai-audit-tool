@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>ASIMOV AI Governance - Previous Audits</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 1000px;
+      margin: 0 auto;
+      padding: 20px;
+      line-height: 1.6;
+    }
+    h1, h2, h3 {
+      color: #333;
+      border-bottom: 1px solid #ddd;
+      padding-bottom: 10px;
+    }
+    .card {
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      padding: 20px;
+      margin-bottom: 20px;
+      background-color: #f9f9f9;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 20px;
+    }
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+    th {
+      background-color: #f2f2f2;
+      position: sticky;
+      top: 0;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f0f0f0;
+    }
+    .nav-links {
+      margin-bottom: 20px;
+    }
+    .nav-links a {
+      margin-right: 15px;
+      color: #4CAF50;
+      text-decoration: none;
+    }
+    .nav-links a:hover {
+      text-decoration: underline;
+    }
+    .button {
+      display: inline-block;
+      background-color: #4CAF50;
+      color: white;
+      padding: 10px 15px;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      text-decoration: none;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+    .button:hover {
+      background-color: #45a049;
+    }
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-links">
+    <a href="/">Home</a>
+  </div>
+  
+  <h1>Previous AI Governance Audits</h1>
+  
+  {% if audits %}
+  <div class="card">
+    <table>
+      <thead>
+        <tr>
+          <th>Audit Name</th>
+          <th>Framework</th>
+          <th>Category</th>
+          <th>Risk Level</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for audit in audits %}
+        <tr>
+          <td>{{ audit.session_name }}</td>
+          <td>{{ audit.framework_filter }}</td>
+          <td>{{ audit.category_filter }}</td>
+          <td>{{ audit.risk_level_filter }}</td>
+          <td>{{ audit.formatted_date }}</td>
+          <td>
+            <a href="/audit/{{ audit.session_id }}/summary">View Summary</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="card empty-state">
+    <h3>No previous audits found</h3>
+    <p>Start a new audit to begin tracking your AI governance compliance.</p>
+    <a href="/" class="button">Start New Audit</a>
+  </div>
+  {% endif %}
+  
+  <div>
+    <a href="/" class="button">Start New Audit</a>
+  </div>
+</body>
+</html>
