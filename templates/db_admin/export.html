@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Export Data - Database Admin</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #333;
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background-color: #f9f9f9;
+        }
+        .nav-links {
+            margin-bottom: 20px;
+        }
+        .nav-links a {
+            display: inline-block;
+            margin-right: 15px;
+            padding: 8px 15px;
+            background-color: #2196F3;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .nav-links a:hover {
+            background-color: #0b7dda;
+        }
+        .tab-container {
+            margin-top: 20px;
+        }
+        .tab {
+            overflow: hidden;
+            border: 1px solid #ccc;
+            background-color: #f1f1f1;
+            border-radius: 4px 4px 0 0;
+        }
+        .tab button {
+            background-color: inherit;
+            float: left;
+            border: none;
+            outline: none;
+            cursor: pointer;
+            padding: 14px 16px;
+            transition: 0.3s;
+            font-size: 16px;
+        }
+        .tab button:hover {
+            background-color: #ddd;
+        }
+        .tab button.active {
+            background-color: #2196F3;
+            color: white;
+        }
+        .tabcontent {
+            display: none;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+        }
+        .form-group {
+            margin-bottom: 15px;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        select, input, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        textarea {
+            height: 150px;
+            font-family: monospace;
+        }
+        .button {
+            display: inline-block;
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 14px;
+        }
+        .button:hover {
+            background-color: #45a049;
+        }
+        .radio-group {
+            margin-bottom: 15px;
+        }
+        .radio-group label {
+            display: inline-block;
+            margin-right: 15px;
+            font-weight: normal;
+        }
+        .radio-group input {
+            width: auto;
+            margin-right: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-links">
+        <a href="/">Main App</a>
+        <a href="/db_admin/">Database Home</a>
+        <a href="/db_admin/query">Custom Query</a>
+        <a href="/db_admin/export">Export Data</a>
+        <a href="/db_admin/analysis">Analysis</a>
+    </div>
+    
+    <h1>Export Database Data</h1>
+    
+    <div class="tab-container">
+        <div class="tab">
+            <button class="tablinks active" onclick="openTab(event, 'TableExport')">Export Table</button>
+            <button class="tablinks" onclick="openTab(event, 'AuditExport')">Export Audit Report</button>
+            <button class="tablinks" onclick="openTab(event, 'CustomExport')">Custom Export</button>
+        </div>
+        
+        <div id="TableExport" class="tabcontent" style="display: block;">
+            <h2>Export Full Table</h2>
+            <form action="/db_admin/export" method="post">
+                <input type="hidden" name="export_type" value="table">
+                
+                <div class="form-group">
+                    <label for="table_name">Select Table:</label>
+                    <select id="table_name" name="table_name" required>
+                        {% for table in tables %}
+                        <option value="{{ table.name }}">{{ table.name }} ({{ table.count }} records)</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Export Format:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="file_format" value="csv" checked> CSV
+                        </label>
+                        <label>
+                            <input type="radio" name="file_format" value="json"> JSON
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button">Export Table</button>
+            </form>
+        </div>
+        
+        <div id="AuditExport" class="tabcontent">
+            <h2>Export Audit Report</h2>
+            <p>Generate a detailed report for a specific audit session.</p>
+            
+            <form action="/db_admin/export" method="post">
+                <input type="hidden" name="export_type" value="audit">
+                
+                <div class="form-group">
+                    <label for="session_id">Select Audit Session:</label>
+                    <select id="session_id" name="session_id" required>
+                        {% for session in sessions %}
+                        <option value="{{ session.session_id }}">{{ session.session_name }} ({{ session.session_date }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Export Format:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="file_format" value="csv" checked> CSV
+                        </label>
+                        <label>
+                            <input type="radio" name="file_format" value="json"> JSON
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button">Export Audit Report</button>
+            </form>
+        </div>
+        
+        <div id="CustomExport" class="tabcontent">
+            <h2>Custom SQL Export</h2>
+            <p>Define a custom SQL query and export the results.</p>
+            
+            <form action="/db_admin/export" method="post">
+                <input type="hidden" name="export_type" value="custom">
+                
+                <div class="form-group">
+                    <label for="query">SQL Query:</label>
+                    <textarea id="query" name="query" placeholder="SELECT * FROM controls WHERE category = 'Defensive Model Strengthening'" required></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label>Export Format:</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="file_format" value="csv" checked> CSV
+                        </label>
+                        <label>
+                            <input type="radio" name="file_format" value="json"> JSON
+                        </label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="button">Export Results</button>
+            </form>
+        </div>
+    </div>
+    
+    <script>
+        function openTab(evt, tabName) {
+            var i, tabcontent, tablinks;
+            
+            // Hide all tab content
+            tabcontent = document.getElementsByClassName("tabcontent");
+            for (i = 0; i < tabcontent.length; i++) {
+                tabcontent[i].style.display = "none";
+            }
+            
+            // Remove "active" class from all tab buttons
+            tablinks = document.getElementsByClassName("tablinks");
+            for (i = 0; i < tablinks.length; i++) {
+                tablinks[i].className = tablinks[i].className.replace(" active", "");
+            }
+            
+            // Show the current tab and add "active" class to the button
+            document.getElementById(tabName).style.display = "block";
+            evt.currentTarget.className += " active";
+        }
+    </script>
+</body>
+</html>
