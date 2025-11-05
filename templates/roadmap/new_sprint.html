@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+
+{% block title %}Create New Sprint - {{ roadmap.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card shadow mb-4">
+                <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                    <h6 class="m-0 font-weight-bold text-primary">Create New Sprint</h6>
+                    <a href="{{ url_for('roadmap.view_roadmap', roadmap_id=roadmap.id) }}" class="btn btn-sm btn-outline-secondary">
+                        <i class="fas fa-arrow-left"></i> Back to Roadmap
+                    </a>
+                </div>
+                <div class="card-body">
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            {% for message in messages %}
+                                <div class="alert alert-info">{{ message }}</div>
+                            {% endfor %}
+                        {% endif %}
+                    {% endwith %}
+                    
+                    <p class="mb-4">
+                        Create a new sprint for <strong>{{ roadmap.name }}</strong> to organize your implementation 
+                        into manageable timeboxes.
+                    </p>
+                    
+                    <form method="POST" action="{{ url_for('roadmap.new_sprint', roadmap_id=roadmap.id) }}">
+                        <div class="form-group">
+                            <label for="name"><strong>Sprint Name</strong> <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" required
+                                   placeholder="e.g., Sprint 1: Documentation Controls">
+                            <small class="form-text text-muted">Choose a descriptive name that reflects the sprint's focus.</small>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="description"><strong>Description</strong></label>
+                            <textarea class="form-control" id="description" name="description" rows="3"
+                                     placeholder="Describe the goals and scope of this sprint..."></textarea>
+                            <small class="form-text text-muted">What do you aim to accomplish in this sprint?</small>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label for="start_date"><strong>Start Date</strong> <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="start_date" name="start_date" required>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label for="end_date"><strong>End Date</strong> <span class="text-danger">*</span></label>
+                                <input type="date" class="form-control" id="end_date" name="end_date" required>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="status"><strong>Initial Status</strong></label>
+                            <select class="form-control" id="status" name="status">
+                                <option value="Planned">Planned</option>
+                                <option value="In Progress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        
+                        <div class="text-center mt-4">
+                            <a href="{{ url_for('roadmap.view_roadmap', roadmap_id=roadmap.id) }}" class="btn btn-secondary">Cancel</a>
+                            <button type="submit" class="btn btn-primary">Create Sprint</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Set default dates
+    const today = new Date();
+    
+    // Format date as YYYY-MM-DD
+    const formatDate = (date) => {
+        const year = date.getFullYear();
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const day = String(date.getDate()).padStart(2, '0');
+        return `${year}-${month}-${day}`;
+    };
+    
+    // Set today as start date
+    document.getElementById('start_date').value = formatDate(today);
+    
+    // Set date 2 weeks from now as end date
+    const endDate = new Date(today);
+    endDate.setDate(today.getDate() + 14);
+    document.getElementById('end_date').value = formatDate(endDate);
+});
+</script>
+{% endblock %}
